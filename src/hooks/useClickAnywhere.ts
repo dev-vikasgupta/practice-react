@@ -19,33 +19,24 @@ import { useEffect, useRef } from 'react';
  *   }
  * });
  */
-export function useClickAnywhere(handler: (event: MouseEvent) => void) {
-  // TODO: Implement this hook properly
-  // 1. Add event listener to document for 'click' events
-  // 2. Call the handler with the event
-  // 3. Clean up the event listener on unmount
-  
-  // Use a ref to store the latest handler
+export function useClickOutside<T extends HTMLElement>(ref: React.RefObject<T>, handler: (event: MouseEvent | TouchEvent)=> void) {
   const handlerRef = useRef(handler);
-  handlerRef.current = handler;
+  useEffect(()=>{
+    handlerRef.current = handler;
+  }, [handler]);
   
   useEffect(() => {
-    // Placeholder implementation - replace with actual implementation
-    const handleClick = (event: MouseEvent) => {
-      // TODO: Call the handler with the event
+    if(typeof document === 'undefined') return;
+    const handleClick = (event: MouseEvent | TouchEvent) => {
+      if(!ref.current || ref.current.contains(event.target as Node)) return;
       handlerRef.current(event);
     };
-    
-    // TODO: Add event listener to document
-    // Use a timeout to avoid immediate triggering of the click that opened the modal
-    const timer = setTimeout(() => {
-      document.addEventListener('click', handleClick);
-    }, 0);
-    
-    // TODO: Return cleanup function
+
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('touchstart', handleClick);
+  
     return () => {
-      clearTimeout(timer);
-      document.removeEventListener('click', handleClick);
-    };
-  }, []); // Empty dependency array since handlerRef is used
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('touchstart', handleClick);    };
+  }, [ref]); 
 }

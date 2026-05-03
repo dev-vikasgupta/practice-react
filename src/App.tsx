@@ -15,7 +15,7 @@ function App() {
             type="button"
             className="counter"
             onClick={() => setIsModalOpen(true)}
-            style={{ backgroundColor: '#646cff', marginTop: '10px' }}
+            style={{ backgroundColor: '#646cff', color: 'white', marginTop: '10px' }}
           >
             Open Modal
           </button>
